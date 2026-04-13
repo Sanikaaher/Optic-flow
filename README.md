@@ -1,6 +1,6 @@
-# Optometry Clinic System
+# Prisha Opticals System
 
-Complete FastAPI + SQLAlchemy optical clinic app with a Vanilla CSS/JS single page frontend.
+Complete FastAPI + SQLAlchemy Prisha Opticals app with a Vanilla CSS/JS single page frontend.
 
 ## Setup
 

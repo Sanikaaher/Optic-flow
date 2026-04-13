@@ -28,7 +28,7 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
         )
     return credentials.username
 
-app = FastAPI(title="Optometry Clinic API", dependencies=[Depends(verify_credentials)])
+app = FastAPI(title="Prisha Opticals API", dependencies=[Depends(verify_credentials)])
 
 # Ensure directories exist
 os.makedirs("static", exist_ok=True)
@@ -155,7 +155,7 @@ def get_whatsapp_bill_url(visit_id: int, db: Session = Depends(get_db)):
         
     # Format message
     message = f"Hello {patient.name},\n\n"
-    message += f"Here is your bill from the Optometry Clinic (Visit ID: {visit.id}).\n\n"
+    message += f"Here is your bill from Prisha Opticals (Visit ID: {visit.id}).\n\n"
     message += f"*Total Amount:* {visit.total_amount}\n"
     message += f"*Advance Paid:* {visit.advance_paid}\n"
     message += f"*Balance Due:* {visit.balance_due}\n"
