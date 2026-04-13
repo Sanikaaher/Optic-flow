@@ -3,47 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpticFlow | Clinic Administration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>OpticFlow Medical Administration</title>
+    <!-- Modern professional font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">OpticFlow</div>
+        <div class="logo">OpticFlow Clinical</div>
         <div class="nav-actions">
             <!-- Search bar -->
             <input type="text" id="patientSearch" placeholder="Search patients..." onkeyup="handleSearch()">
-            <button class="btn btn-primary" onclick="openPatientModal()">+ New Patient</button>
+            <button class="btn btn-primary" onclick="openPatientModal()">
+                <span>+ New Patient</span>
+            </button>
         </div>
     </nav>
 
     <main class="container">
         <!-- Dashboard List -->
-        <section class="patient-list" id="patientListContainer">
-            <div class="list-header">
-                <h2>Patients Overview</h2>
+        <section class="panel" id="patientListContainer">
+            <div class="section-header flex-between">
+                <h2>Patient Roster</h2>
             </div>
-            <div class="table-responsive">
-                <table class="table" id="patientsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Age</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patientsTableBody">
-                        <!-- Filled by JS -->
-                    </tbody>
-                </table>
+            <!-- The Card Grid -->
+            <div class="patient-list-grid" id="patientsCardContainer">
+                <!-- Filled dynamically by JS -->
             </div>
         </section>
 
         <!-- Dynamic Content Section -->
-        <section class="patient-details hidden" id="patientDetailsContainer">
-            <!-- Filled by JS when viewing a patient -->
+        <section class="panel hidden" id="patientDetailsContainer">
+            <!-- Filled dynamically by JS when viewing a patient -->
         </section>
     </main>
 
@@ -51,26 +42,36 @@
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closePatientModal()">&times;</span>
-            <h2 id="patientModalTitle">Add New Patient</h2>
-            <form id="patientForm" onsubmit="submitPatient(event)">
+            <div class="section-header">
+                <h2 id="patientModalTitle">Patient Registration</h2>
+            </div>
+            <form id="patientForm" onsubmit="submitPatient(event)" novalidate>
                 <input type="hidden" id="patientId">
                 <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="patientName" required>
+                    <label>Full Name *</label>
+                    <input type="text" id="patientName" class="form-control" required>
+                    <span class="check-icon">✓</span>
+                    <div id="patientNameErr" class="error-msg">Enter a valid name (min 2 chars).</div>
                 </div>
                 <div class="form-group">
-                    <label>Phone</label>
-                    <input type="tel" id="patientPhone" required>
+                    <label>Phone Number *</label>
+                    <input type="tel" id="patientPhone" class="form-control" required>
+                    <span class="check-icon">✓</span>
+                    <div id="patientPhoneErr" class="error-msg">Enter a valid 10-digit phone number.</div>
                 </div>
                 <div class="form-group">
                     <label>Age</label>
-                    <input type="number" id="patientAge">
+                    <input type="number" id="patientAge" class="form-control">
+                    <span class="check-icon">✓</span>
+                    <div id="patientAgeErr" class="error-msg">Enter a valid age (1-120).</div>
                 </div>
                 <div class="form-group">
                     <label>Secondary Contact</label>
-                    <input type="tel" id="patientSecondaryPhone">
+                    <input type="tel" id="patientSecondaryPhone" class="form-control">
+                    <span class="check-icon">✓</span>
+                    <div id="patientSecondaryPhoneErr" class="error-msg">Enter a valid 10-digit phone number.</div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Save Patient</button>
+                <button type="submit" id="btnPatientSubmit" class="btn btn-primary w-100" style="margin-top: 1rem;">Save Patient Details</button>
             </form>
         </div>
     </div>
@@ -79,84 +80,173 @@
     <div id="visitModal" class="modal">
         <div class="modal-content modal-large">
             <span class="close" onclick="closeVisitModal()">&times;</span>
-            <h2 id="visitModalTitle">Add New Visit</h2>
-            <form id="visitForm" onsubmit="submitVisit(event)">
+            <div class="section-header">
+                <h2 id="visitModalTitle">Clinical Visit Record</h2>
+            </div>
+            <form id="visitForm" onsubmit="submitVisit(event)" novalidate>
                 <input type="hidden" id="visitId">
                 <input type="hidden" id="visitPatientId">
                 
-                <div class="grid-2">
-                    <div class="form-group"><label>Complaints</label><textarea id="vComplaints"></textarea></div>
-                    <div class="form-group"><label>Diagnosis</label><textarea id="vDiagnosis"></textarea></div>
-                </div>
-
-                <h3>Prescription</h3>
-                <div class="grid-2">
-                    <!-- Right Eye -->
-                    <div class="prescription-box">
-                        <h4>Right Eye (OD)</h4>
-                        <div class="grid-2">
-                            <div class="form-group"><label>SPH</label><input type="text" id="vRSph"></div>
-                            <div class="form-group"><label>CYL</label><input type="text" id="vRCyl"></div>
-                            <div class="form-group"><label>AXIS</label><input type="text" id="vRAxis"></div>
-                            <div class="form-group"><label>ADD</label><input type="text" id="vRAdd"></div>
-                            <div class="form-group"><label>VA</label><input type="text" id="vRVa"></div>
+                <!-- Clinical Section -->
+                <div class="form-section">
+                    <h3>Clinical Overview</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Presenting Complaints</label>
+                            <textarea id="vComplaints" class="form-control" rows="2"></textarea>
                         </div>
-                    </div>
-                    <!-- Left Eye -->
-                    <div class="prescription-box">
-                        <h4>Left Eye (OS)</h4>
-                        <div class="grid-2">
-                            <div class="form-group"><label>SPH</label><input type="text" id="vLSph"></div>
-                            <div class="form-group"><label>CYL</label><input type="text" id="vLCyl"></div>
-                            <div class="form-group"><label>AXIS</label><input type="text" id="vLAxis"></div>
-                            <div class="form-group"><label>ADD</label><input type="text" id="vLAdd"></div>
-                            <div class="form-group"><label>VA</label><input type="text" id="vLVa"></div>
+                        <div class="form-group">
+                            <label>Diagnosis</label>
+                            <textarea id="vDiagnosis" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid-2">
-                    <div class="form-group"><label>Total PD</label><input type="text" id="vTotalPd"></div>
-                    <div class="form-group"><label>Seg Height</label><input type="text" id="vSegHeight"></div>
-                </div>
-
-                <h3>Billing & Order Details</h3>
-                <div class="grid-3">
-                    <div class="form-group"><label>Total Amount</label><input type="number" step="0.01" id="vTotalAmt" oninput="calculateBalance()"></div>
-                    <div class="form-group"><label>Advance Paid</label><input type="number" step="0.01" id="vAdvance" oninput="calculateBalance()"></div>
-                    <div class="form-group"><label>Balance Due</label><input type="number" step="0.01" id="vBalance" readonly class="readonly-field"></div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Order Status</label>
-                        <select id="vStatus">
-                            <option value="Prescribed">Prescribed</option>
-                            <option value="Sent to Lab">Sent to Lab</option>
-                            <option value="Ready">Ready</option>
-                            <option value="Delivered">Delivered</option>
-                        </select>
+                <!-- Refraction Section -->
+                <div class="form-section">
+                    <h3>Refraction details</h3>
+                    <div class="grid-2">
+                        <!-- Right Eye -->
+                        <div style="background: rgba(0,0,0,0.02); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                            <h4 style="margin-top:0; color: var(--primary);">Right Eye (OD)</h4>
+                            <div class="grid-5">
+                                <div class="form-group"><label>SPH</label><input type="text" id="vRSph" class="form-control"></div>
+                                <div class="form-group"><label>CYL</label><input type="text" id="vRCyl" class="form-control"></div>
+                                <div class="form-group"><label>AXIS</label><input type="text" id="vRAxis" class="form-control"></div>
+                                <div class="form-group"><label>ADD</label><input type="text" id="vRAdd" class="form-control"></div>
+                                <div class="form-group"><label>VA</label><input type="text" id="vRVa" class="form-control"></div>
+                            </div>
+                        </div>
+                        <!-- Left Eye -->
+                        <div style="background: rgba(0,0,0,0.02); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
+                            <h4 style="margin-top:0; color: var(--primary);">Left Eye (OS)</h4>
+                            <div class="grid-5">
+                                <div class="form-group"><label>SPH</label><input type="text" id="vLSph" class="form-control"></div>
+                                <div class="form-group"><label>CYL</label><input type="text" id="vLCyl" class="form-control"></div>
+                                <div class="form-group"><label>AXIS</label><input type="text" id="vLAxis" class="form-control"></div>
+                                <div class="form-group"><label>ADD</label><input type="text" id="vLAdd" class="form-control"></div>
+                                <div class="form-group"><label>VA</label><input type="text" id="vLVa" class="form-control"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Review Remark</label>
-                        <select id="vReview">
-                            <option value="">None</option>
-                            <option value="1 month">1 month</option>
-                            <option value="3 months">3 months</option>
-                            <option value="6 months">6 months</option>
-                            <option value="1 year">1 year</option>
-                        </select>
+                    <div class="grid-2" style="margin-top:1rem;">
+                        <div class="form-group"><label>Total PD</label><input type="text" id="vTotalPd" class="form-control"></div>
+                        <div class="form-group"><label>Seg Height</label><input type="text" id="vSegHeight" class="form-control"></div>
+                    </div>
+                </div>
+
+                <!-- Dispensing Section -->
+                <div class="form-section">
+                    <h3>Dispensing</h3>
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>Lens Type</label>
+                            <select id="vLensType" class="form-control">
+                                <option value="">Select Type</option>
+                                <option value="Single Vision">Single Vision</option>
+                                <option value="Bifocal">Bifocal</option>
+                                <option value="Progressive">Progressive</option>
+                                <option value="Photochromic">Photochromic</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lens Index</label>
+                            <select id="vLensIndex" class="form-control">
+                                <option value="">Select Index</option>
+                                <option value="1.50">1.50</option>
+                                <option value="1.56">1.56</option>
+                                <option value="1.60">1.60</option>
+                                <option value="1.67">1.67</option>
+                                <option value="1.74">1.74</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Coatings</label>
+                            <select id="vCoatings" class="form-control">
+                                <option value="None">None</option>
+                                <option value="Anti-Reflection">Anti-Reflection</option>
+                                <option value="Blue Cut">Blue Cut</option>
+                                <option value="Photochromic">Photochromic</option>
+                                <option value="Anti-Reflection + Blue Cut">ARC + Blue Cut</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Frame Details</label>
+                            <input type="text" id="vFrameDetails" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing & Tracking Section -->
+                <div class="form-section">
+                    <h3>Billing & Tracking</h3>
+                    <div class="billing-block">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Total Amount *</label>
+                                <div style="display:flex; align-items:center;">
+                                    <span style="font-size:1.2rem; margin-right:5px; color:var(--text-muted);">$</span>
+                                    <input type="number" step="0.01" id="vTotalAmt" class="form-control" required>
+                                </div>
+                                <div id="vTotalAmtErr" class="error-msg">Must be a positive number.</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Advance Paid *</label>
+                                <div style="display:flex; align-items:center;">
+                                    <span style="font-size:1.2rem; margin-right:5px; color:var(--text-muted);">$</span>
+                                    <input type="number" step="0.01" id="vAdvance" class="form-control" required>
+                                </div>
+                                <div id="vAdvanceErr" class="error-msg">Must be non-negative and ≤ Total.</div>
+                            </div>
+                            <div class="form-group total-highlight">
+                                <label>Balance Due</label>
+                                <div style="display:flex; align-items:center;">
+                                    <span style="font-size:1.2rem; margin-right:5px; color:var(--primary); font-weight:bold;">$</span>
+                                    <input type="number" id="vBalance" class="form-control" readonly style="cursor:not-allowed;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3" style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select id="vPaymentMethod" class="form-control">
+                                <option value="">Select Method</option>
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Card">Card</option>
+                                <option value="Insurance">Insurance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Order Status</label>
+                            <select id="vStatus" class="form-control">
+                                <option value="Prescribed">Prescribed</option>
+                                <option value="Sent to Lab">Sent to Lab</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Review Frequency</label>
+                            <select id="vReview" class="form-control">
+                                <option value="">None</option>
+                                <option value="1 month">1 month</option>
+                                <option value="3 months">3 months</option>
+                                <option value="6 months">6 months</option>
+                                <option value="1 year">1 year</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary w-100 mt-2">Save Visit Log</button>
+                <button type="submit" id="btnVisitSubmit" class="btn btn-primary w-100 mt-2" style="font-size:1.1rem; padding:0.75rem;">Finalize Visit Record</button>
             </form>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast hidden">Action Successful!</div>
-
+    <!-- Script Injection -->
     <script src="/static/scripts.js"></script>
 </body>
 </html>
