@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpticFlow | Clinic Administration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">OpticFlow</div>
+        <div class="nav-actions">
+            <!-- Search bar -->
+            <input type="text" id="patientSearch" placeholder="Search patients..." onkeyup="handleSearch()">
+            <button class="btn btn-primary" onclick="openPatientModal()">+ New Patient</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard List -->
+        <section class="patient-list" id="patientListContainer">
+            <div class="list-header">
+                <h2>Patients Overview</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="patientsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Age</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsTableBody">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Section -->
+        <section class="patient-details hidden" id="patientDetailsContainer">
+            <!-- Filled by JS when viewing a patient -->
+        </section>
+    </main>
+
+    <!-- Patient Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePatientModal()">&times;</span>
+            <h2 id="patientModalTitle">Add New Patient</h2>
+            <form id="patientForm" onsubmit="submitPatient(event)">
+                <input type="hidden" id="patientId">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="patientName" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="patientPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="patientAge">
+                </div>
+                <div class="form-group">
+                    <label>Secondary Contact</label>
+                    <input type="tel" id="patientSecondaryPhone">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Save Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Visit Modal -->
+    <div id="visitModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeVisitModal()">&times;</span>
+            <h2 id="visitModalTitle">Add New Visit</h2>
+            <form id="visitForm" onsubmit="submitVisit(event)">
+                <input type="hidden" id="visitId">
+                <input type="hidden" id="visitPatientId">
+                
+                <div class="grid-2">
+                    <div class="form-group"><label>Complaints</label><textarea id="vComplaints"></textarea></div>
+                    <div class="form-group"><label>Diagnosis</label><textarea id="vDiagnosis"></textarea></div>
+                </div>
+
+                <h3>Prescription</h3>
+                <div class="grid-2">
+                    <!-- Right Eye -->
+                    <div class="prescription-box">
+                        <h4>Right Eye (OD)</h4>
+                        <div class="grid-2">
+                            <div class="form-group"><label>SPH</label><input type="text" id="vRSph"></div>
+                            <div class="form-group"><label>CYL</label><input type="text" id="vRCyl"></div>
+                            <div class="form-group"><label>AXIS</label><input type="text" id="vRAxis"></div>
+                            <div class="form-group"><label>ADD</label><input type="text" id="vRAdd"></div>
+                            <div class="form-group"><label>VA</label><input type="text" id="vRVa"></div>
+                        </div>
+                    </div>
+                    <!-- Left Eye -->
+                    <div class="prescription-box">
+                        <h4>Left Eye (OS)</h4>
+                        <div class="grid-2">
+                            <div class="form-group"><label>SPH</label><input type="text" id="vLSph"></div>
+                            <div class="form-group"><label>CYL</label><input type="text" id="vLCyl"></div>
+                            <div class="form-group"><label>AXIS</label><input type="text" id="vLAxis"></div>
+                            <div class="form-group"><label>ADD</label><input type="text" id="vLAdd"></div>
+                            <div class="form-group"><label>VA</label><input type="text" id="vLVa"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group"><label>Total PD</label><input type="text" id="vTotalPd"></div>
+                    <div class="form-group"><label>Seg Height</label><input type="text" id="vSegHeight"></div>
+                </div>
+
+                <h3>Billing & Order Details</h3>
+                <div class="grid-3">
+                    <div class="form-group"><label>Total Amount</label><input type="number" step="0.01" id="vTotalAmt" oninput="calculateBalance()"></div>
+                    <div class="form-group"><label>Advance Paid</label><input type="number" step="0.01" id="vAdvance" oninput="calculateBalance()"></div>
+                    <div class="form-group"><label>Balance Due</label><input type="number" step="0.01" id="vBalance" readonly class="readonly-field"></div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Order Status</label>
+                        <select id="vStatus">
+                            <option value="Prescribed">Prescribed</option>
+                            <option value="Sent to Lab">Sent to Lab</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Delivered">Delivered</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Review Remark</label>
+                        <select id="vReview">
+                            <option value="">None</option>
+                            <option value="1 month">1 month</option>
+                            <option value="3 months">3 months</option>
+                            <option value="6 months">6 months</option>
+                            <option value="1 year">1 year</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 mt-2">Save Visit Log</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">Action Successful!</div>
+
+    <script src="/static/scripts.js"></script>
+</body>
+</html>
