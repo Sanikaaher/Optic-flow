@@ -13,8 +13,8 @@ function showToast(msg) {
 }
 
 // Data Fetching
-async function fetchPatients(search = "") {
-    const res = await fetch(`/api/patients/?search=${search}`);
+async function fetchPatients(search = "", date = "") {
+    const res = await fetch(`/api/patients/?search=${search}&visit_date=${date}`);
     const data = await res.json();
     renderPatients(data);
 }
@@ -66,8 +66,9 @@ let searchTimeout = null;
 function handleSearch() {
     clearTimeout(searchTimeout);
     const val = document.getElementById('patientSearch').value;
+    const dateVal = document.getElementById('visitDateSearch')?.value || "";
     searchTimeout = setTimeout(() => {
-        fetchPatients(val);
+        fetchPatients(val, dateVal);
     }, 300);
 }
 

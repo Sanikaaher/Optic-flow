@@ -13,7 +13,8 @@
         <div class="logo">Prisha Opticals</div>
         <div class="nav-actions">
             <!-- Search bar -->
-            <input type="text" id="patientSearch" placeholder="Search patients..." onkeyup="handleSearch()">
+            <input type="text" id="patientSearch" placeholder="Search name/phone..." onkeyup="handleSearch()">
+            <input type="date" id="visitDateSearch" onchange="handleSearch()" title="Filter by Visit Date" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: inherit;">
             <button class="btn btn-primary" onclick="openPatientModal()">
                 <span>+ New Patient</span>
             </button>
@@ -110,22 +111,22 @@
                         <div style="background: rgba(0,0,0,0.02); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
                             <h4 style="margin-top:0; color: var(--primary);">Right Eye (OD)</h4>
                             <div class="grid-5">
-                                <div class="form-group"><label>SPH</label><input type="text" id="vRSph" class="form-control"></div>
-                                <div class="form-group"><label>CYL</label><input type="text" id="vRCyl" class="form-control"></div>
-                                <div class="form-group"><label>AXIS</label><input type="text" id="vRAxis" class="form-control"></div>
-                                <div class="form-group"><label>ADD</label><input type="text" id="vRAdd" class="form-control"></div>
-                                <div class="form-group"><label>VA</label><input type="text" id="vRVa" class="form-control"></div>
+                                <div class="form-group"><label>SPH</label><input type="number" step="0.25" id="vRSph" class="form-control" placeholder="+0.00"></div>
+                                <div class="form-group"><label>CYL</label><input type="number" step="0.25" id="vRCyl" class="form-control" placeholder="-0.00"></div>
+                                <div class="form-group"><label>AXIS</label><input type="number" step="1" min="0" max="180" id="vRAxis" class="form-control" placeholder="180"></div>
+                                <div class="form-group"><label>ADD</label><input type="number" step="0.25" id="vRAdd" class="form-control" placeholder="+1.00"></div>
+                                <div class="form-group"><label>VA</label><input type="text" id="vRVa" class="form-control" placeholder="6/6"></div>
                             </div>
                         </div>
                         <!-- Left Eye -->
                         <div style="background: rgba(0,0,0,0.02); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
                             <h4 style="margin-top:0; color: var(--primary);">Left Eye (OS)</h4>
                             <div class="grid-5">
-                                <div class="form-group"><label>SPH</label><input type="text" id="vLSph" class="form-control"></div>
-                                <div class="form-group"><label>CYL</label><input type="text" id="vLCyl" class="form-control"></div>
-                                <div class="form-group"><label>AXIS</label><input type="text" id="vLAxis" class="form-control"></div>
-                                <div class="form-group"><label>ADD</label><input type="text" id="vLAdd" class="form-control"></div>
-                                <div class="form-group"><label>VA</label><input type="text" id="vLVa" class="form-control"></div>
+                                <div class="form-group"><label>SPH</label><input type="number" step="0.25" id="vLSph" class="form-control" placeholder="+0.00"></div>
+                                <div class="form-group"><label>CYL</label><input type="number" step="0.25" id="vLCyl" class="form-control" placeholder="-0.00"></div>
+                                <div class="form-group"><label>AXIS</label><input type="number" step="1" min="0" max="180" id="vLAxis" class="form-control" placeholder="180"></div>
+                                <div class="form-group"><label>ADD</label><input type="number" step="0.25" id="vLAdd" class="form-control" placeholder="+1.00"></div>
+                                <div class="form-group"><label>VA</label><input type="text" id="vLVa" class="form-control" placeholder="6/6"></div>
                             </div>
                         </div>
                     </div>

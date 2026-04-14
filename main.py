@@ -8,6 +8,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 from typing import List
 from urllib.parse import quote
+import datetime
 
 import models
 import schemas
@@ -55,10 +56,12 @@ def create_patient(patient: schemas.PatientCreate, db: Session = Depends(get_db)
     return db_patient
 
 @app.get("/api/patients/", response_model=List[schemas.Patient])
-def read_patients(skip: int = 0, limit: int = 100, search: str = None, db: Session = Depends(get_db)):
+def read_patients(skip: int = 0, limit: int = 100, search: str = None, visit_date: datetime.date = None, db: Session = Depends(get_db)):
     query = db.query(models.Patient)
     if search:
         query = query.filter(models.Patient.name.ilike(f"%{search}%") | models.Patient.phone.ilike(f"%{search}%"))
+    if visit_date:
+        query = query.join(models.Visit).filter(models.Visit.date_of_visit == visit_date).distinct()
     patients = query.offset(skip).limit(limit).all()
     return patients
 
