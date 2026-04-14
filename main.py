@@ -18,13 +18,17 @@ models.Base.metadata.create_all(bind=engine)
 security = HTTPBasic()
 
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, os.getenv("APP_USER", "admin"))
-    correct_password = secrets.compare_digest(credentials.password, os.getenv("APP_PASS", "admin"))
+    input_username = credentials.username.strip()
+    input_password = credentials.password.strip()
+    
+    correct_username = secrets.compare_digest(input_username, os.getenv("APP_USER", "admin"))
+    correct_password = secrets.compare_digest(input_password, os.getenv("APP_PASS", "admin"))
+    
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "Basic realm=\"Prisha Opticals\""},
         )
     return credentials.username
 
