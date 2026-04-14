@@ -14,9 +14,17 @@ function showToast(msg) {
 
 // Data Fetching
 async function fetchPatients(search = "", date = "") {
-    const res = await fetch(`/api/patients/?search=${search}&visit_date=${date}`);
+    let url = `/api/patients/?search=${encodeURIComponent(search)}`;
+    if (date) url += `&visit_date=${encodeURIComponent(date)}`;
+    
+    const res = await fetch(url);
     const data = await res.json();
-    renderPatients(data);
+    
+    if (Array.isArray(data)) {
+        renderPatients(data);
+    } else {
+        renderPatients([]);
+    }
 }
 
 function renderPatients(patients) {
