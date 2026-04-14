@@ -117,6 +117,7 @@ async function viewPatient(id) {
                 <button class="btn btn-outline" onclick="backToList()">Close File</button>
                 <button class="btn btn-primary" onclick="editPatientModal(${id})">Edit Details</button>
                 <button class="btn btn-primary" onclick="openVisitModal(${id})">+ New Visit</button>
+                <button class="btn" style="background-color: var(--danger); color: white;" onclick="deletePatient(${id})">Delete</button>
             </div>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
@@ -402,5 +403,19 @@ async function sendWhatsAppBill(visitId) {
         window.open(data.url, '_blank');
     } else {
         alert("Failed to generate bill link.");
+    }
+}
+
+async function deletePatient(id) {
+    if(!confirm("Are you sure you want to delete this patient? All their visits will be deleted as well.")) {
+        return;
+    }
+    const res = await fetch(`/api/patients/${id}`, {
+        method: 'DELETE'
+    });
+    if (res.ok) {
+        backToList();
+    } else {
+        alert("Server Error. Could not delete patient.");
     }
 }
